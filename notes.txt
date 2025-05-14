@@ -1,0 +1,7 @@
+This is just to remember some definitions I forgot:
+
+
+scope resolution operator (::) is used to access the identifiers such as variable names and function names defined inside some other scope in the current scope
+
+A unique_ptr can only have one owner at a time, which means it is guaranteed to be the sole owner of the object it points to.
+
