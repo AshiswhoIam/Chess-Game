@@ -1,10 +1,11 @@
 #include "ChessBoard.h"
 #include <iostream>
 
-ChessBoard::ChessBoard(){
-
-    //2D dynamic arr where ea element is smart pointer pointing at chesspiece
-    board.resize(BOARD_SIZE, std::vector<std::unique_ptr<ChessPiece>>(BOARD_SIZE, nullptr));
+ChessBoard::ChessBoard() {
+    board.resize(BOARD_SIZE);
+    for (int i = 0; i < BOARD_SIZE; ++i) {
+        board[i].resize(BOARD_SIZE);
+    }
     initializeBoard();
 }
 
