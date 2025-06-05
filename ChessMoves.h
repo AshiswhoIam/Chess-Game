@@ -1,6 +1,6 @@
 #ifndef CHESSMOVES_H
 #define CHESSMOVES_H
-#include <cmath>
+
 
 class ChessMoves {
 public:
@@ -17,20 +17,13 @@ public:
     char promotionPiece = 'Q';
 
     //Constructor
-    ChessMoves(int initialRow, int initialCol, int desiredRow, int desiredCol)
-        : initialRow(initialRow), initialCol(initialCol),desiredRow(desiredRow), desiredCol(desiredCol) {}
+    ChessMoves(int initialRow, int initialCol, int desiredRow, int desiredCol);
     //Constructor with all maybe change later.
-    ChessMoves(int initialRow, int initialCol, int desiredRow, int desiredCol,bool isCaptured=false,bool isPromotion=false,char promotionPiece='')
-        : initialRow(initialRow), initialCol(initialCol),desiredRow(desiredRow), desiredCol(desiredCol),
-        isCaptured(isCaptured), isPromotion(isPromotion),promotionPiece(promotionPiece) {}
+    ChessMoves(int initialRow, int initialCol, int desiredRow, int desiredCol,bool isCaptured=false,bool isPromotion=false,char promotionPiece='Q');
     //using abs for diagonal movements
-    bool isDiagonal() const {
-        return abs(initialRow-desiredRow)==abs(initialCol-desiredCol);
-    }
+    bool isDiagonal() const;
 
-    bool isStraight() const {
-        return (initialRow==desiredRow || initialCol==desiredCol);
-    }
+    bool isStraight() const;
 
 #endif
 };

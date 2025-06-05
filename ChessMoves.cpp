@@ -1,4 +1,5 @@
 #include "ChessMoves.h"
+#include <cmath>
 
 //Minimal Constructor.
 ChessMoves::ChessMoves(int initialRow, int initialCol, int desiredRow, int desiredCol)
@@ -12,7 +13,7 @@ ChessMoves::ChessMoves(int initialRow, int initialCol, int desiredRow, int desir
 
 //Checking for diagonal movement
 bool ChessMoves::isDiagonal() const {
-    return std::abs(initialRow - desiredRow) == std::abs(initialCol - desiredCol);
+    return abs(initialRow - desiredRow) == abs(initialCol - desiredCol);
 }
 
 //Checking for straight move
