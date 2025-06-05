@@ -53,3 +53,11 @@ void ChessBoard::printBoard() const {
         std::cout << std::endl;
     }
 }
+//function to return piece
+std::unique_ptr<ChessPiece>& ChessBoard::getPiece(int row, int col) {
+    return board[row][col];
+}
+//function to return piece in const board.
+const std::unique_ptr<ChessPiece>& ChessBoard::getPiece(int row, int col) const {
+    return board[row][col];
+}

@@ -15,6 +15,11 @@ public:
 
     //Board State
     void printBoard() const;
+    //Retrieving the piece
+    std::unique_ptr<ChessPiece>& getPiece(int row, int col);
+    //Retrieving pieces in a constant board... fix after.
+    const std::unique_ptr<ChessPiece>& getPiece(int row, int col) const;
+
 
 private: 
     //2d grid for board
