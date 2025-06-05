@@ -17,23 +17,12 @@ public:
     char promotionPiece = 'Q';
 
     //Constructor
-    ChessMoves(int initialRow, int initialCol, int desiredRow, int desiredCol) {
-        this->initialRow = initialRow;
-        this->initialCol = initialCol;
-        this->desiredRow = desiredRow;
-        this->desiredCol = desiredCol;
-    }
+    ChessMoves(int initialRow, int initialCol, int desiredRow, int desiredCol)
+        : initialRow(initialRow), initialCol(initialCol),desiredRow(desiredRow), desiredCol(desiredCol) {}
     //Constructor with all maybe change later.
-    ChessMoves(int initialRow, int initialCol, int desiredRow, int desiredCol,bool isCaptured=false,bool isPromotion=false
-        ,char promotionPiece='') {
-        this->initialRow = initialRow;
-        this->initialCol = initialCol;
-        this->desiredRow = desiredRow;
-        this->desiredCol = desiredCol;
-        this->isCaptured = isCaptured;
-        this->isPromotion = isPromotion;
-        this->promotionPiece = promotionPiece;
-    }
+    ChessMoves(int initialRow, int initialCol, int desiredRow, int desiredCol,bool isCaptured=false,bool isPromotion=false,char promotionPiece='')
+        : initialRow(initialRow), initialCol(initialCol),desiredRow(desiredRow), desiredCol(desiredCol),
+        isCaptured(isCaptured), isPromotion(isPromotion),promotionPiece(promotionPiece) {}
     //using abs for diagonal movements
     bool isDiagonal() const {
         return abs(initialRow-desiredRow)==abs(initialCol-desiredCol);
