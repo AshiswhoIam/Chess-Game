@@ -5,3 +5,62 @@ scope resolution operator (::) is used to access the identifiers such as variabl
 
 A unique_ptr can only have one owner at a time, which means it is guaranteed to be the sole owner of the object it points to.
 
+
+
+
+---Notes for testing the moves Logic  on pieces
+
+So far tested for pawns:
+
+Moving 2 spaces initially works
+
+Moving 2 spaces after initial does not work
+
+Moving Diagonally to capture works
+
+Cannot capture or move if blocked by a enemy front piece
+
+
+For Rooks:
+
+Cannot go over pieces of enemy
+
+Cannot go over piece of ally
+
+Cannot move diagonally
+
+For Bishops:
+
+Cannot diagonal over
+
+Can diagonal
+
+Backward works
+
+Capture works
+
+Knight:
+
+seems to not go on spot occupied
+
+can move in L shapes
+
+Capture works
+
+Queen:
+
+side moves works
+
+capture works
+
+
+King:
+
+Capture and forward move works
+
+
+To fix:
+
+Need to add the promotion rule. For pawns
+
+an infinite loop bug i forgot which entry
