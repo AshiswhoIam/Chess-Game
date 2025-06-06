@@ -26,10 +26,9 @@ char Pawn::getSymbol() const{
 
 bool Pawn::isValidMove(const ChessMoves& move,const ChessBoard& board)const {
 
-    //might need to change the 1 -1
     //To ensure forward direction of pawns
     //maybe need to add more after will check logic...
-    int direction = (c== Color::White ? 1 : -1);
+    int direction = (c== Color::White ? -1 : 1);
     int startingRow = (c== Color::White ? 6 : 1);
 
     //Row diff initialization to check for movements of pawns
