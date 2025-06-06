@@ -2,6 +2,10 @@
 #define CHESSPIECE_H
 #include <string>
 
+//Forward declarations
+class ChessMoves;
+class ChessBoard;
+
 enum class Color{
 White,
 Black
@@ -20,6 +24,9 @@ public:
     //Pure Virt fnc
     virtual char getSymbol() const=0;
 
+    //Pvf for checking move validity for every single piece
+    virtual bool isValidMove(const ChessMoves& move, const ChessBoard& board) const = 0;
+
 protected:
     Color c;
 };
@@ -28,36 +35,42 @@ class Pawn : public ChessPiece{
 public:
     Pawn(Color c);
     char getSymbol() const override;
+    bool isValidMove(const ChessMoves& move, const ChessBoard& board) const override;
 };
 
 class Rook : public ChessPiece{
 public:
     Rook(Color c);
     char getSymbol() const override;
+    bool isValidMove(const ChessMoves& move, const ChessBoard& board) const override;
 };
 
 class Knight : public ChessPiece{
 public:
     Knight(Color c);
     char getSymbol() const override;
+    bool isValidMove(const ChessMoves& move, const ChessBoard& board) const override;
 };
 
 class Bishop : public ChessPiece{
 public:
     Bishop(Color c);
     char getSymbol() const override;
+    bool isValidMove(const ChessMoves& move, const ChessBoard& board) const override;
 };
 
 class Queen : public ChessPiece{
 public:
     Queen(Color c);
     char getSymbol() const override;
+    bool isValidMove(const ChessMoves& move, const ChessBoard& board) const override;
 };
 
 class King : public ChessPiece{
 public:
     King(Color c);
     char getSymbol() const override;
+    bool isValidMove(const ChessMoves& move, const ChessBoard& board) const override;
 };
 
 
