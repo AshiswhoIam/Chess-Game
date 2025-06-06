@@ -19,11 +19,12 @@ public:
     //Constructor
     ChessMoves(int initialRow, int initialCol, int desiredRow, int desiredCol);
     //Constructor with all maybe change later.
-    ChessMoves(int initialRow, int initialCol, int desiredRow, int desiredCol,bool isCaptured=false,bool isPromotion=false,char promotionPiece='Q');
+    //ChessMoves(int initialRow, int initialCol, int desiredRow, int desiredCol,bool isCaptured=false,bool isPromotion=false,char promotionPiece='Q');
     //using abs for diagonal movements
     bool isDiagonal() const;
 
     bool isStraight() const;
 
-#endif
+
 };
+#endif
