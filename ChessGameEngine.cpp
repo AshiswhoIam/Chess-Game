@@ -1,6 +1,6 @@
 #include "ChessGameEngine.h"
 #include <iostream>
-
+#include <cctype>
 
 //Constructor to initialize board with pieces
 ChessGameEngine::ChessGameEngine() : currentTurn(Color::White) {
@@ -37,28 +37,41 @@ bool ChessGameEngine::makeMove(const ChessMoves& move) {
     sourcePiecePtr = nullptr;
 
     //This ill do for promotion handling replacing the pawn with piece chosen
-    if (move.isPromotion) {
-        //myb add fnc later for creating piece with sybol char
-        char promo = move.promotionPiece;
+    if (destPiecePtr) {
+        //dest piece is smart pointer getting dereferenced for symbol checking for pawn
+        char symbol = destPiecePtr->getSymbol();
+        //this is for getting the color of the piece
         Color pieceColor = destPiecePtr->getColor();
+        //Set the promotion row to 0 for White pawns and 7 for Black pawns.
+        int promotionRow = (pieceColor == Color::White) ? 0 : 7;
+        //myb add fnc later for creating piece with sybol char
+        if ((symbol == 'P' || symbol == 'p') && move.desiredRow == promotionRow) {
+            char promo;
+            std::cout << "Pawn promotion! Choose piece (Q, R, B, N): ";
+            std::cin >> promo;
+            //Turning char into upcase
+            promo = std::toupper(promo);
 
-        switch (promo) {
-            case 'Q':
-                destPiecePtr = std::make_unique<Queen>(pieceColor);
-                break;
-            case 'R':
-                destPiecePtr = std::make_unique<Rook>(pieceColor);
-                break;
-            case 'B':
-                destPiecePtr = std::make_unique<Bishop>(pieceColor);
-                break;
-            case 'N':
-                destPiecePtr = std::make_unique<Knight>(pieceColor);
-                break;
-            default:
-                //Default to Queen if unknown
-                destPiecePtr = std::make_unique<Queen>(pieceColor);
-                break;
+
+            switch (promo) {
+                case 'Q':
+                    destPiecePtr = std::make_unique<Queen>(pieceColor);
+                    break;
+                case 'R':
+                    destPiecePtr = std::make_unique<Rook>(pieceColor);
+                    break;
+                case 'B':
+                    destPiecePtr = std::make_unique<Bishop>(pieceColor);
+                    break;
+                case 'N':
+                    destPiecePtr = std::make_unique<Knight>(pieceColor);
+                    break;
+                default:
+                    //Default to Queen if unknown
+                    std::cout << "Invalid input. Promoting to Queen by default.\n";
+                    destPiecePtr = std::make_unique<Queen>(pieceColor);
+                    break;
+            }
         }
     }
 
