@@ -12,7 +12,6 @@ Color ChessPiece::getColor() const{
     return c;
 }
 
-
 //Derived Classes
 
 //Pawn implementation
@@ -238,4 +237,31 @@ bool King::isValidMove(const ChessMoves& move, const ChessBoard& board) const {
         return true;
 
     return target->getColor() != c;
+}
+
+
+//Clone for pieces
+std::unique_ptr<ChessPiece> Pawn::clone() const {
+    return std::make_unique<Pawn>(*this);
+}
+
+
+std::unique_ptr<ChessPiece> Rook::clone() const {
+    return std::make_unique<Rook>(*this);
+}
+
+std::unique_ptr<ChessPiece> Knight::clone() const {
+    return std::make_unique<Knight>(*this);
+}
+
+std::unique_ptr<ChessPiece> Bishop::clone() const {
+    return std::make_unique<Bishop>(*this);
+}
+
+std::unique_ptr<ChessPiece> Queen::clone() const {
+    return std::make_unique<Queen>(*this);
+}
+
+std::unique_ptr<ChessPiece> King::clone() const {
+    return std::make_unique<King>(*this);
 }
