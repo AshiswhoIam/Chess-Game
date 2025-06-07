@@ -1,4 +1,5 @@
 #include "ChessGameEngine.h"
+#include "ChessBoard.h"
 #include <iostream>
 #include <cctype>
 
@@ -74,6 +75,12 @@ bool ChessGameEngine::makeMove(const ChessMoves& move) {
             }
         }
     }
+    //Msg to show check
+    Color opponent = (currentTurn == Color::White) ? Color::Black : Color::White;
+    if (isKingInCheck(opponent)) {
+        std::cout << (opponent == Color::White ? "White" : "Black") << "'s King is in CHECK!" << std::endl;
+    }
+
 
     //Switching turns after player move
     switchTurn();
@@ -104,11 +111,69 @@ bool ChessGameEngine::isMoveLegal(const ChessMoves& move) const {
     if (!sourcePiecePtr->isValidMove(move, board))
         return false;
 
-//Adding other rulessets later just testing for now.
+
+    //Make a deep copy of the board to simulate the move
+    ChessBoard tempBoard = board;
+
+    //Move pieces on the temp board
+    auto& tempSource = tempBoard.getPiece(move.initialRow, move.initialCol);
+    auto& tempDest = tempBoard.getPiece(move.desiredRow, move.desiredCol);
+
+    tempDest = std::move(tempSource);
+    tempSource = nullptr;
+
+    //Create a temporary engine to check if the current player's king is in check after the move
+    ChessGameEngine tempEngine = *this;
+    tempEngine.board = std::move(tempBoard);
+
+    //If king is in check after move, it is illegal
+    if (tempEngine.isKingInCheck(currentTurn)) {
+        return false;
+    }
+
 
     return true;
 }
 
+
+
 void ChessGameEngine::switchTurn() {
     currentTurn = (currentTurn == Color::White) ? Color::Black : Color::White;
+}
+
+bool ChessGameEngine::isKingInCheck(Color kingColor) const {
+    int kingRow = -1, kingCol = -1;
+
+    //Check the kings location
+    for (int row = 0; row < BOARD_SIZE; ++row) {
+        for (int col = 0; col < BOARD_SIZE; ++col) {
+            const auto& piece = board.getPiece(row, col);
+            if (piece && piece->getSymbol() == (kingColor == Color::White ? 'K' : 'k')) {
+                kingRow = row;
+                kingCol = col;
+                break;
+            }
+        }
+    }
+
+    if (kingRow == -1 || kingCol == -1) {
+        std::cerr << "Error: King not found on board!\n";
+        return false;
+    }
+
+    //Checking the opposings moves
+    for (int row = 0; row < BOARD_SIZE; ++row) {
+        for (int col = 0; col < BOARD_SIZE; ++col) {
+            const auto& piece = board.getPiece(row, col);
+            if (piece && piece->getColor() != kingColor) {
+                ChessMoves testMove(row, col, kingRow, kingCol);
+                //King is checked
+                if (piece->isValidMove(testMove, board)) {
+                    return true;
+                }
+            }
+        }
+    }
+    //if King is not checked
+    return false;
 }

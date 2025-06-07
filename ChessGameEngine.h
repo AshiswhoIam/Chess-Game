@@ -14,6 +14,10 @@ public:
     //Displaying the game
     void displayGame() const;
 
+    //Checking if King in check
+    bool isKingInCheck(Color kingColor) const;
+
+
 private:
     ChessBoard board;
     Color currentTurn;
