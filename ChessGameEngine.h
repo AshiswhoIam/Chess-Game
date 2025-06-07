@@ -17,6 +17,13 @@ public:
     //Checking if King in check
     bool isKingInCheck(Color kingColor) const;
 
+    //To Check if Kingis in Checkmate or has more moves
+    bool hasLegalMoves(Color playerColor) const;
+    //check if checkmate
+    bool isCheckmated(Color playerColor) const;
+    //check for stalemate
+    bool isStalemated(Color playerColor) const;
+
 
 private:
     ChessBoard board;

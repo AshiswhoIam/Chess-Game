@@ -84,6 +84,14 @@ bool ChessGameEngine::makeMove(const ChessMoves& move) {
 
     //Switching turns after player move
     switchTurn();
+    //If its checkmate
+    if (!hasLegalMoves(currentTurn)) {
+        if (isKingInCheck(currentTurn)) {
+            std::cout << (currentTurn == Color::White ? "White" : "Black") << " is in CHECKMATE!" << std::endl;
+        } else {
+            std::cout << "STALEMATE! No legal moves." << std::endl;
+        }
+    }
 
     return true;
 }
@@ -176,4 +184,34 @@ bool ChessGameEngine::isKingInCheck(Color kingColor) const {
     }
     //if King is not checked
     return false;
+}
+
+//Checking for legal moves avaiable for king checkmate
+bool ChessGameEngine::hasLegalMoves(Color playerColor) const {
+    for (int fromRow = 0; fromRow < BOARD_SIZE; ++fromRow) {
+        for (int fromCol = 0; fromCol < BOARD_SIZE; ++fromCol) {
+            const auto& piece = board.getPiece(fromRow, fromCol);
+            if (piece && piece->getColor() == playerColor) {
+                for (int toRow = 0; toRow < BOARD_SIZE; ++toRow) {
+                    for (int toCol = 0; toCol < BOARD_SIZE; ++toCol) {
+                        ChessMoves move(fromRow, fromCol, toRow, toCol);
+                        if (isMoveLegal(move)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+//If checkmated
+bool ChessGameEngine::isCheckmated(Color playerColor) const {
+    return isKingInCheck(playerColor) && !hasLegalMoves(playerColor);
+}
+
+//If stalemated
+bool ChessGameEngine::isStalemated(Color playerColor) const {
+    return !isKingInCheck(playerColor) && !hasLegalMoves(playerColor);
 }
