@@ -61,3 +61,46 @@ std::unique_ptr<ChessPiece>& ChessBoard::getPiece(int row, int col) {
 const std::unique_ptr<ChessPiece>& ChessBoard::getPiece(int row, int col) const {
     return board[row][col];
 }
+
+//Copy Constructor
+ChessBoard::ChessBoard(const ChessBoard& other) {
+    board.resize(BOARD_SIZE);
+    for (int row = 0; row < BOARD_SIZE; ++row) {
+        board[row].resize(BOARD_SIZE);
+        for (int col = 0; col < BOARD_SIZE; ++col) {
+            if (other.board[row][col]) {
+                board[row][col] = other.board[row][col]->clone();
+            }
+        }
+    }
+}
+
+//Assignment operator
+ChessBoard& ChessBoard::operator=(const ChessBoard& other) {
+    if (this == &other) return *this; // self-assignment check
+
+    //Clear current board
+    for (auto& row : board) {
+        for (auto& piecePtr : row) {
+            piecePtr.reset();
+        }
+    }
+
+    //Resize board
+    board.resize(BOARD_SIZE);
+    for (auto& row : board)
+        row.resize(BOARD_SIZE);
+
+    //Deep copy pieces from other board
+    for (int r = 0; r < BOARD_SIZE; ++r) {
+        for (int c = 0; c < BOARD_SIZE; ++c) {
+            if (other.board[r][c]) {
+                board[r][c] = other.board[r][c]->clone();
+            } else {
+                board[r][c] = nullptr;
+            }
+        }
+    }
+    return *this;
+}
+
