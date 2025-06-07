@@ -215,3 +215,7 @@ bool ChessGameEngine::isCheckmated(Color playerColor) const {
 bool ChessGameEngine::isStalemated(Color playerColor) const {
     return !isKingInCheck(playerColor) && !hasLegalMoves(playerColor);
 }
+
+Color ChessGameEngine::getCurrentTurn() const {
+    return currentTurn;
+}

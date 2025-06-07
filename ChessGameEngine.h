@@ -23,6 +23,8 @@ public:
     bool isCheckmated(Color playerColor) const;
     //check for stalemate
     bool isStalemated(Color playerColor) const;
+    //getting color turn
+    Color getCurrentTurn() const;
 
 
 private:

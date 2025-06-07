@@ -13,6 +13,21 @@ int main() {
 
     //Game loop
     while (true) {
+        //Color storage
+        Color currentPlayer = gameEngine.getCurrentTurn();
+
+        // Check for checkmate
+        if (gameEngine.isCheckmated(currentPlayer)) {
+            std::cout << (currentPlayer == Color::White ? "White" : "Black") << " is in checkmate! "
+                      << (currentPlayer == Color::White ? "Black" : "White") << " wins!\n";
+            break;
+        }
+
+        // Check for stalemate
+        if (gameEngine.isStalemated(currentPlayer)) {
+            std::cout << "Stalemate! The game is a draw.\n";
+            break;
+        }
         //Display the board & color current turn
         std::cout << "\nCurrent Game Board:\n" << std::endl;
         gameEngine.displayGame();
