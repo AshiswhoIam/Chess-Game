@@ -85,13 +85,13 @@ bool Rook::isValidMove(const ChessMoves& move,const ChessBoard& board)const {
         currentRow += stepRow;
         currentCol += stepCol;
     }
-    //Verifiy Destination squares
+    //Verify Destination squares
     auto& target = board.getPiece(move.desiredRow, move.desiredCol);
     //The square empty
     if (target == nullptr)
         return true;
 
-    //This is for caputuring depending on the color
+    //This is for capturing depending on the color
     return target->getColor() != c;
 }
 
@@ -112,13 +112,13 @@ bool Knight::isValidMove(const ChessMoves& move, const ChessBoard& board) const 
     if (!((rowDifference == 2 && colDifference == 1) || (rowDifference == 1 && colDifference == 2)))
         return false;
 
-    //Verifiy Destination squares
+    //Verify Destination squares
     auto& target = board.getPiece(move.desiredRow, move.desiredCol);
     //The square empty
     if (target == nullptr)
         return true;
 
-    //This is for caputuring depending on the color
+    //This is for capturing depending on the color
     return target->getColor() != c;
 }
 
@@ -154,7 +154,7 @@ bool Bishop::isValidMove(const ChessMoves& move, const ChessBoard& board) const 
         currentCol += stepCol;
     }
 
-    //Verifiy Destination squares
+    //Verify Destination squares
     auto& target = board.getPiece(move.desiredRow, move.desiredCol);
     //The square empty
     if (target == nullptr)
@@ -173,7 +173,6 @@ char Queen::getSymbol() const {
 
 
 //Queen move validations check
-
 bool Queen::isValidMove(const ChessMoves& move, const ChessBoard& board) const {
 
     //initialize row diff
@@ -228,17 +227,21 @@ bool King::isValidMove(const ChessMoves& move, const ChessBoard& board) const {
     int rowDifference = abs(move.desiredRow - move.initialRow);
     int colDifference = abs(move.desiredCol - move.initialCol);
 
-    //limit king movements only 1 square
-    if (rowDifference > 1 || colDifference > 1)
-        return false;
+    //King moving 1 square any direction
+    if (rowDifference <= 1 && colDifference <= 1) {
+        auto& target = board.getPiece(move.desiredRow, move.desiredCol);
+        return !target || target->getColor() != c;
+    }
 
-    auto& target = board.getPiece(move.desiredRow, move.desiredCol);
-    if (target == nullptr)
+    //Castling for king to move 2 squares horizontally
+    if (rowDifference == 0 && colDifference == 2) {
+        //Return true @ makeMove
         return true;
+    }
 
-    return target->getColor() != c;
+    //Invalid if any other move
+    return false;
 }
-
 
 //Clone for pieces
 std::unique_ptr<ChessPiece> Pawn::clone() const {

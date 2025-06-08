@@ -1,5 +1,8 @@
 #include "ChessBoard.h"
+#include "ChessMoves.h"
 #include <iostream>
+#include "ChessGameEngine.h"
+#include <cmath>
 
 ChessBoard::ChessBoard() {
     board.resize(BOARD_SIZE);
@@ -104,3 +107,45 @@ ChessBoard& ChessBoard::operator=(const ChessBoard& other) {
     return *this;
 }
 
+//Making sure pathing is good for castle
+bool ChessBoard::isPathClearForCastling(Color color, bool kingside) const {
+    int row = (color == Color::White) ? 7 : 0;
+
+    int kingCol = 4;
+    int rookCol = kingside ? 7 : 0;
+
+    int direction = (rookCol - kingCol) > 0 ? 1 : -1;
+
+    //Check if squares between king and rook are empty
+    for (int col = kingCol + direction; col != rookCol; col += direction) {
+        if (getPiece(row, col))
+            return false;
+    }
+
+    //Check that squares the king crosses are not under attack
+    for (int step = 0; step <= 2; ++step) {
+        int testCol = kingCol + step * direction;
+        ChessMoves checkMove(row, testCol, row, testCol);  // Dummy move from and to same square
+        if (isSquareUnderAttack(row, testCol, color))
+            return false;
+
+    }
+
+    return true;
+}
+
+//Checking if current position of square is hit by any piece
+bool ChessBoard::isSquareUnderAttack(int row, int col, Color threatenedColor) const {
+    for (int r = 0; r < BOARD_SIZE; ++r) {
+        for (int c = 0; c < BOARD_SIZE; ++c) {
+            const auto& piece = getPiece(r, c);
+            if (piece && piece->getColor() != threatenedColor) {
+                ChessMoves testMove(r, c, row, col);
+                if (piece->isValidMove(testMove, *this)) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}

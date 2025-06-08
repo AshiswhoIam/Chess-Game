@@ -10,16 +10,76 @@ ChessGameEngine::ChessGameEngine() : currentTurn(Color::White) {
 
 //Validation of the moves done
 bool ChessGameEngine::makeMove(const ChessMoves& move) {
+
+    auto& sourcePiecePtr = board.getPiece(move.initialRow, move.initialCol);
+    //Get the piece at the source/ini position
+    //auto& sourcePiecePtr = board.getPiece(move.initialRow, move.initialCol);
+    if (!sourcePiecePtr) {
+        std::cout << "No piece at the source position." << std::endl;
+        return false;
+    }
+    char symbol = sourcePiecePtr->getSymbol();
+    Color pieceColor = sourcePiecePtr->getColor();
+
+    //Check if the move is a castling move
+    bool isKingside = (move.desiredCol == 6);
+    bool isQueenside = (move.desiredCol == 2);
+    bool isCastlingRow = (pieceColor == Color::White) ? (move.initialRow == 7) : (move.initialRow == 0);
+
+    if ((symbol == 'K' || symbol == 'k') &&
+        move.initialCol == 4 && isCastlingRow &&
+        (isKingside || isQueenside)) {
+
+        if (canCastle(pieceColor, isKingside)) {
+            performCastling(pieceColor, isKingside);
+
+            //Update castling flags after castling move
+            if (pieceColor == Color::White) {
+                whiteKingMoved = true;
+                if (isKingside)
+                    whiteRookKingsideMoved = true;
+                else
+                    whiteRookQueensideMoved = true;
+            } else {
+                blackKingMoved = true;
+                if (isKingside)
+                    blackRookKingsideMoved = true;
+                else
+                    blackRookQueensideMoved = true;
+            }
+
+            switchTurn();
+            return true;
+        } else {
+            std::cout << "Castling not allowed.\n";
+            return false;
+        }
+        }
+
     if (!isMoveLegal(move)) {
         std::cout << "Illegal move has been made!" << std::endl;
         return false;
     }
 
-    //Get the piece at the source/ini position
-    auto& sourcePiecePtr = board.getPiece(move.initialRow, move.initialCol);
-    if (!sourcePiecePtr) {
-        std::cout << "No piece at the source position." << std::endl;
-        return false;
+
+
+
+
+    //Update castling flags if King or Rook moves normally
+    if (symbol == 'K') {
+        whiteKingMoved = true;
+    } else if (symbol == 'k') {
+        blackKingMoved = true;
+    } else if (symbol == 'R') {
+        if (move.initialRow == 7 && move.initialCol == 0)
+            whiteRookQueensideMoved = true;
+        else if (move.initialRow == 7 && move.initialCol == 7)
+            whiteRookKingsideMoved = true;
+    } else if (symbol == 'r') {
+        if (move.initialRow == 0 && move.initialCol == 0)
+            blackRookQueensideMoved = true;
+        else if (move.initialRow == 0 && move.initialCol == 7)
+            blackRookKingsideMoved = true;
     }
 
     //Get the piece at the destination
@@ -186,7 +246,7 @@ bool ChessGameEngine::isKingInCheck(Color kingColor) const {
     return false;
 }
 
-//Checking for legal moves avaiable for king checkmate
+//Checking for legal moves available for king checkmate
 bool ChessGameEngine::hasLegalMoves(Color playerColor) const {
     for (int fromRow = 0; fromRow < BOARD_SIZE; ++fromRow) {
         for (int fromCol = 0; fromCol < BOARD_SIZE; ++fromCol) {
@@ -218,4 +278,94 @@ bool ChessGameEngine::isStalemated(Color playerColor) const {
 
 Color ChessGameEngine::getCurrentTurn() const {
     return currentTurn;
+}
+
+//Can castle method
+bool ChessGameEngine::canCastle(Color color, bool kingside) const {
+    int row = (color == Color::White) ? 7 : 0;
+    int kingCol = 4;
+    int rookCol = kingside ? 7 : 0;
+
+    //Check if king or relevant rook has moved
+    if ((color == Color::White && (whiteKingMoved || (kingside ? whiteRookKingsideMoved : whiteRookQueensideMoved))) ||
+        (color == Color::Black && (blackKingMoved || (kingside ? blackRookKingsideMoved : blackRookQueensideMoved)))) {
+        return false;
+        }
+
+    //Check if squares between king and rook are empty
+    int startCol = std::min(kingCol, rookCol) + 1;
+    int endCol = std::max(kingCol, rookCol) - 1;
+
+    for (int col = startCol; col <= endCol; ++col) {
+        if (board.getPiece(row, col)) return false;
+    }
+
+    //Check that king is not in check and does not pass through or land on an attacked square
+    for (int col = kingCol; kingside ? col <= 6 : col >= 2; kingside ? ++col : --col) {
+        ChessBoard tempBoard = board;
+        auto& tempSource = tempBoard.getPiece(row, kingCol);
+        auto& tempDest = tempBoard.getPiece(row, col);
+        tempDest = std::move(tempSource);
+        tempSource = nullptr;
+
+        ChessGameEngine tempEngine = *this;
+        tempEngine.board = std::move(tempBoard);
+        if (tempEngine.isKingInCheck(color)) return false;
+    }
+
+    return true;
+}
+
+//Doing the Castling
+void ChessGameEngine::performCastling(Color color, bool kingside) {
+    int row = (color == Color::White) ? 7 : 0;
+    int kingCol = 4;
+    int rookCol = kingside ? 7 : 0;
+
+    int newKingCol = kingside ? 6 : 2;
+    int newRookCol = kingside ? 5 : 3;
+
+    //Move King
+    auto& kingPtr = board.getPiece(row, kingCol);
+    auto& kingDest = board.getPiece(row, newKingCol);
+    kingDest = std::move(kingPtr);
+    board.getPiece(row, kingCol) = nullptr;
+
+    //Move Rook
+    auto& rookPtr = board.getPiece(row, rookCol);
+    auto& rookDest = board.getPiece(row, newRookCol);
+    rookDest = std::move(rookPtr);
+    board.getPiece(row, rookCol) = nullptr;
+
+    //Update castling rights
+    if (color == Color::White) {
+        whiteKingMoved = true;
+        if (kingside)
+            whiteRookKingsideMoved = true;
+        else
+            whiteRookQueensideMoved = true;
+    } else {
+        blackKingMoved = true;
+        if (kingside)
+            blackRookKingsideMoved = true;
+        else
+            blackRookQueensideMoved = true;
+    }
+}
+
+//Checking if square is under a opposing threat
+bool ChessGameEngine::isSquareUnderAttack(int row, int col, Color threatenedColor) const {
+    for (int r = 0; r < BOARD_SIZE; ++r) {
+        for (int c = 0; c < BOARD_SIZE; ++c) {
+            const auto& piece = board.getPiece(r, c);
+            if (piece && piece->getColor() != threatenedColor) {
+                ChessMoves move(r, c, row, col);
+                //true then this square is under attack
+                if (piece->isValidMove(move, board)) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }

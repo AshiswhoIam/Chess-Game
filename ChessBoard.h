@@ -23,6 +23,12 @@ public:
     const std::unique_ptr<ChessPiece>& getPiece(int row, int col) const;
     //Assignment operator
     ChessBoard& operator=(const ChessBoard& other);
+    //Need to check clear path on board
+    bool isPathClearForCastling(Color color, bool kingside) const;
+    //Need to check if square currently is under attacked else cant castle
+    bool isSquareUnderAttack(int row, int col, Color threatenedColor) const;
+
+
 
 
 

@@ -17,7 +17,7 @@ public:
     //Checking if King in check
     bool isKingInCheck(Color kingColor) const;
 
-    //To Check if Kingis in Checkmate or has more moves
+    //To Check if King is in Checkmate or has more moves
     bool hasLegalMoves(Color playerColor) const;
     //check if checkmate
     bool isCheckmated(Color playerColor) const;
@@ -25,6 +25,15 @@ public:
     bool isStalemated(Color playerColor) const;
     //getting color turn
     Color getCurrentTurn() const;
+    //For castling check
+    bool canCastle(Color color, bool kingside) const;
+    //Performing Castling
+    void performCastling(Color color, bool kingside);
+    //
+    bool isSquareUnderAttack(int row, int col, Color threatenedColor) const;
+
+
+
 
 
 private:
@@ -36,6 +45,15 @@ private:
 
     //Changing turns
     void switchTurn();
+
+    //Track king and rook movement for castling
+    bool whiteKingMoved = false;
+    bool blackKingMoved = false;
+    bool whiteRookKingsideMoved = false;
+    bool whiteRookQueensideMoved = false;
+    bool blackRookKingsideMoved = false;
+    bool blackRookQueensideMoved = false;
+
 };
 
 #endif
