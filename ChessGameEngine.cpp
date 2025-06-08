@@ -91,7 +91,7 @@ bool ChessGameEngine::makeMove(const ChessMoves& move) {
         destPiecePtr.reset();
     }
 
-    //Move the piece here transfering unique ptr
+    //Move the piece here transferring unique ptr
     destPiecePtr = std::move(sourcePiecePtr);
 
     //The source/ini square is now empty
@@ -179,26 +179,10 @@ bool ChessGameEngine::isMoveLegal(const ChessMoves& move) const {
     if (!sourcePiecePtr->isValidMove(move, board))
         return false;
 
-
-    //Make a deep copy of the board to simulate the move
-    ChessBoard tempBoard = board;
-
-    //Move pieces on the temp board
-    auto& tempSource = tempBoard.getPiece(move.initialRow, move.initialCol);
-    auto& tempDest = tempBoard.getPiece(move.desiredRow, move.desiredCol);
-
-    tempDest = std::move(tempSource);
-    tempSource = nullptr;
-
-    //Create a temporary engine to check if the current player's king is in check after the move
-    ChessGameEngine tempEngine = *this;
-    tempEngine.board = std::move(tempBoard);
-
-    //If king is in check after move, it is illegal
-    if (tempEngine.isKingInCheck(currentTurn)) {
+    //Use the helper method instead of creating a temporary engine
+    if (isKingInCheckAfterMove(move, currentTurn)) {
         return false;
     }
-
 
     return true;
 }
@@ -213,16 +197,18 @@ bool ChessGameEngine::isKingInCheck(Color kingColor) const {
     int kingRow = -1, kingCol = -1;
 
     //Check the kings location
-    for (int row = 0; row < BOARD_SIZE; ++row) {
-        for (int col = 0; col < BOARD_SIZE; ++col) {
+    bool foundKing = false;
+    for (int row = 0; row < BOARD_SIZE && !foundKing; ++row) {
+        for (int col = 0; col < BOARD_SIZE && !foundKing; ++col) {
             const auto& piece = board.getPiece(row, col);
             if (piece && piece->getSymbol() == (kingColor == Color::White ? 'K' : 'k')) {
                 kingRow = row;
                 kingCol = col;
-                break;
+                foundKing = true;
             }
         }
     }
+
 
     if (kingRow == -1 || kingCol == -1) {
         std::cerr << "Error: King not found on board!\n";
@@ -290,7 +276,18 @@ bool ChessGameEngine::canCastle(Color color, bool kingside) const {
     if ((color == Color::White && (whiteKingMoved || (kingside ? whiteRookKingsideMoved : whiteRookQueensideMoved))) ||
         (color == Color::Black && (blackKingMoved || (kingside ? blackRookKingsideMoved : blackRookQueensideMoved)))) {
         return false;
-        }
+    }
+
+    //Verify king and rook are actually present
+    const auto& kingPiece = board.getPiece(row, kingCol);
+    const auto& rookPiece = board.getPiece(row, rookCol);
+
+    if (!kingPiece || !rookPiece ||
+        kingPiece->getColor() != color || rookPiece->getColor() != color ||
+        kingPiece->getSymbol() != (color == Color::White ? 'K' : 'k') ||
+        rookPiece->getSymbol() != (color == Color::White ? 'R' : 'r')) {
+        return false;
+    }
 
     //Check if squares between king and rook are empty
     int startCol = std::min(kingCol, rookCol) + 1;
@@ -300,20 +297,70 @@ bool ChessGameEngine::canCastle(Color color, bool kingside) const {
         if (board.getPiece(row, col)) return false;
     }
 
-    //Check that king is not in check and does not pass through or land on an attacked square
-    for (int col = kingCol; kingside ? col <= 6 : col >= 2; kingside ? ++col : --col) {
-        ChessBoard tempBoard = board;
-        auto& tempSource = tempBoard.getPiece(row, kingCol);
-        auto& tempDest = tempBoard.getPiece(row, col);
-        tempDest = std::move(tempSource);
-        tempSource = nullptr;
+    //Check if king is currently in check
+    if (isKingInCheck(color)) {
+        return false;
+    }
 
-        ChessGameEngine tempEngine = *this;
-        tempEngine.board = std::move(tempBoard);
-        if (tempEngine.isKingInCheck(color)) return false;
+    //Checking king doesn't pass through attacked squares
+    //Use existing board.isSquareUnderAttack method instead of creating temp engines
+    std::vector<int> pathCols = kingside ? std::vector<int>{5, 6} : std::vector<int>{3, 2};
+    for (int col : pathCols) {
+        if (board.isSquareUnderAttack(row, col, color)) {
+            return false;
+        }
     }
 
     return true;
+}
+
+//Helping to check if move king in check
+bool ChessGameEngine::isKingInCheckAfterMove(const ChessMoves& move, Color kingColor) const {
+    //Creating a copy of the board to simulate the move
+    ChessBoard tempBoard = board;
+
+    //Performing the move on the temporary board
+    auto& tempSource = tempBoard.getPiece(move.initialRow, move.initialCol);
+    auto& tempDest = tempBoard.getPiece(move.desiredRow, move.desiredCol);
+    //No piece to move
+    if (!tempSource) return false;
+
+    tempDest = std::move(tempSource);
+    tempSource = nullptr;
+
+    //Checking if the king is in check on this temporary board
+    //Findng king
+    int kingRow = -1, kingCol = -1;
+    bool foundKing = false;
+
+    for (int row = 0; row < BOARD_SIZE && !foundKing; ++row) {
+        for (int col = 0; col < BOARD_SIZE && !foundKing; ++col) {
+            const auto& piece = tempBoard.getPiece(row, col);
+            if (piece && piece->getSymbol() == (kingColor == Color::White ? 'K' : 'k')) {
+                kingRow = row;
+                kingCol = col;
+                foundKing = true;
+            }
+        }
+    }
+    //If no king found, assume check
+    if (!foundKing) return true;
+
+    //Check if any enemy piece can attack the king
+    for (int row = 0; row < BOARD_SIZE; ++row) {
+        for (int col = 0; col < BOARD_SIZE; ++col) {
+            const auto& piece = tempBoard.getPiece(row, col);
+            if (piece && piece->getColor() != kingColor) {
+                ChessMoves testMove(row, col, kingRow, kingCol);
+                //King would be in check
+                if (piece->isValidMove(testMove, tempBoard)) {
+                    return true;
+                }
+            }
+        }
+    }
+    //King would not be in check
+    return false;
 }
 
 //Doing the Castling

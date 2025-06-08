@@ -29,8 +29,9 @@ public:
     bool canCastle(Color color, bool kingside) const;
     //Performing Castling
     void performCastling(Color color, bool kingside);
-    //
+    //Checking if the square is hit by enemy for castling
     bool isSquareUnderAttack(int row, int col, Color threatenedColor) const;
+
 
 
 
@@ -53,6 +54,8 @@ private:
     bool whiteRookQueensideMoved = false;
     bool blackRookKingsideMoved = false;
     bool blackRookQueensideMoved = false;
+    //Chess move on a temporary copy of board and then checks king.
+    bool isKingInCheckAfterMove(const ChessMoves& move, Color kingColor) const;
 
 };
 
