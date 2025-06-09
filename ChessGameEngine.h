@@ -33,8 +33,10 @@ public:
     bool isSquareUnderAttack(int row, int col, Color threatenedColor) const;
     //getter for board
     const ChessBoard& getBoard() const;
-
-
+    //Handling promotion on screen
+    bool isPromotionPending() const;
+    //To do the promotion on selection
+    void executePromotion(char promotionPiece);
 
 private:
     ChessBoard board;
@@ -55,6 +57,10 @@ private:
     bool blackRookQueensideMoved = false;
     //Chess move on a temporary copy of board and then checks king.
     bool isKingInCheckAfterMove(const ChessMoves& move, Color kingColor) const;
+    //For proper promotion in SFML
+    bool promotionPending = false;
+    int promotionRow = -1, promotionCol = -1;
+    Color promotionColor = Color::White;
 
 };
 

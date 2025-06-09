@@ -99,40 +99,17 @@ bool ChessGameEngine::makeMove(const ChessMoves& move) {
 
     //This ill do for promotion handling replacing the pawn with piece chosen
     if (destPiecePtr) {
-        //dest piece is smart pointer getting dereferenced for symbol checking for pawn
         char symbol = destPiecePtr->getSymbol();
-        //this is for getting the color of the piece
         Color pieceColor = destPiecePtr->getColor();
-        //Set the promotion row to 0 for White pawns and 7 for Black pawns.
-        int promotionRow = (pieceColor == Color::White) ? 0 : 7;
-        //myb add fnc later for creating piece with sybol char
-        if ((symbol == 'P' || symbol == 'p') && move.desiredRow == promotionRow) {
-            char promo;
-            std::cout << "Pawn promotion! Choose piece (Q, R, B, N): ";
-            std::cin >> promo;
-            //Turning char into upcase
-            promo = std::toupper(promo);
+        int promotionRowTarget = (pieceColor == Color::White) ? 0 : 7;
 
-
-            switch (promo) {
-                case 'Q':
-                    destPiecePtr = std::make_unique<Queen>(pieceColor);
-                    break;
-                case 'R':
-                    destPiecePtr = std::make_unique<Rook>(pieceColor);
-                    break;
-                case 'B':
-                    destPiecePtr = std::make_unique<Bishop>(pieceColor);
-                    break;
-                case 'N':
-                    destPiecePtr = std::make_unique<Knight>(pieceColor);
-                    break;
-                default:
-                    //Default to Queen if unknown
-                    std::cout << "Invalid input. Promoting to Queen by default.\n";
-                    destPiecePtr = std::make_unique<Queen>(pieceColor);
-                    break;
-            }
+        if ((symbol == 'P' || symbol == 'p') && move.desiredRow == promotionRowTarget) {
+            // Set promotion pending instead of immediately promoting
+            promotionPending = true;
+            promotionRow = move.desiredRow;
+            promotionCol = move.desiredCol;
+            promotionColor = pieceColor;
+            return true; // Return true but don't switch turn yet
         }
     }
     //Msg to show check
@@ -154,6 +131,55 @@ bool ChessGameEngine::makeMove(const ChessMoves& move) {
     }
 
     return true;
+}
+bool ChessGameEngine::isPromotionPending() const {
+    return promotionPending;
+}
+
+void ChessGameEngine::executePromotion(char promotionPiece) {
+    if (!promotionPending) return;
+
+    auto& destPiecePtr = board.getPiece(promotionRow, promotionCol);
+
+    switch (std::toupper(promotionPiece)) {
+        case 'Q':
+            destPiecePtr = std::make_unique<Queen>(promotionColor);
+            break;
+        case 'R':
+            destPiecePtr = std::make_unique<Rook>(promotionColor);
+            break;
+        case 'B':
+            destPiecePtr = std::make_unique<Bishop>(promotionColor);
+            break;
+        case 'N':
+            destPiecePtr = std::make_unique<Knight>(promotionColor);
+            break;
+        default:
+            destPiecePtr = std::make_unique<Queen>(promotionColor);
+            break;
+    }
+
+    //Reset promotion state
+    promotionPending = false;
+    promotionRow = -1;
+    promotionCol = -1;
+
+    //Check for check/checkmate after promotion
+    Color opponent = (currentTurn == Color::White) ? Color::Black : Color::White;
+    if (isKingInCheck(opponent)) {
+        std::cout << (opponent == Color::White ? "White" : "Black") << "'s King is in CHECK!" << std::endl;
+    }
+
+    //Now switch turn after promotion is complete
+    switchTurn();
+
+    if (!hasLegalMoves(currentTurn)) {
+        if (isKingInCheck(currentTurn)) {
+            std::cout << (currentTurn == Color::White ? "White" : "Black") << " is in CHECKMATE!" << std::endl;
+        } else {
+            std::cout << "STALEMATE! No legal moves." << std::endl;
+        }
+    }
 }
 
 void ChessGameEngine::displayGame() const {
