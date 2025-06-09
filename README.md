@@ -2,14 +2,18 @@ The following repo is for the creation of a chess-game using C++, unreal engine 
 
 Plan:
 
--Core Code:
-    To be added:
-        Checkmate,
-        Stalemate,
-        Castling,
-        En passant-> can do this later,  
-        Move Logging,
-        Undo Move,
--3d modeling->Might do Gui 2d first and 3d later
--inputs/controllers
-maybe move logs etc...
+Future Plans:
+
+Fix Error msg logic
+
+Fix the UI a bit
+
+Add logging with SFML maybe
+
+Add undo move
+
+Add En passant logic
+
+Add a bot to play against
+
+Do it in 3d later to learn unreal engine
