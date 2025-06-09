@@ -57,7 +57,7 @@ bool ChessGameEngine::makeMove(const ChessMoves& move) {
         }
 
     if (!isMoveLegal(move)) {
-        std::cout << "Illegal move has been made!" << std::endl;
+        //std::cout << "Illegal move has been made!" << std::endl;
         return false;
     }
 

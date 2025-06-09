@@ -110,6 +110,8 @@ int main() {
     promotionText.setPosition((BOARD_SIZE - 300) / 2, (BOARD_SIZE - SQUARE_SIZE) / 2 - 40);
 
     //Function to get valid moves for a piece
+    //Function to get valid moves for a piece
+    //Function to get valid moves for a piece
     auto getValidMoves = [&](int row, int col) -> std::vector<std::pair<int, int>> {
         std::vector<std::pair<int, int>> moves;
         const ChessBoard& board = gameEngine.getBoard();
@@ -123,7 +125,16 @@ int main() {
         for (int toRow = 0; toRow < 8; toRow++) {
             for (int toCol = 0; toCol < 8; toCol++) {
                 ChessMoves move(row, col, toRow, toCol);
-                //Using the game engine's move validation
+
+                //Quick basic validation first to avoid unnecessary temp engine creation
+                if (toRow == row && toCol == col) continue;
+
+                const auto& destPiece = board.getPiece(toRow, toCol);
+                if (destPiece && destPiece->getColor() == piece->getColor()) continue;
+                // Piece-specific validation
+                if (!piece->isValidMove(move, board)) continue;
+
+                //Checking if move leaves king in check using temp engine
                 ChessGameEngine tempEngine = gameEngine;
                 if (tempEngine.makeMove(move)) {
                     moves.push_back({toRow, toCol});

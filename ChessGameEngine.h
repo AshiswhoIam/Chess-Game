@@ -37,13 +37,13 @@ public:
     bool isPromotionPending() const;
     //To do the promotion on selection
     void executePromotion(char promotionPiece);
-
+    //Move validation
+    bool isMoveLegal(const ChessMoves& move) const;
 private:
     ChessBoard board;
     Color currentTurn;
 
-    //Move validation
-    bool isMoveLegal(const ChessMoves& move) const;
+
 
     //Changing turns
     void switchTurn();
