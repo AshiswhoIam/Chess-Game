@@ -4,7 +4,7 @@ Plan:
 
 Future Plans:
 
-Fix Error msg logic
+Fix Error msg logic: FIXED
 
 Fix the UI a bit
 
