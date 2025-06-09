@@ -416,3 +416,7 @@ bool ChessGameEngine::isSquareUnderAttack(int row, int col, Color threatenedColo
     }
     return false;
 }
+//returing the board
+const ChessBoard& ChessGameEngine::getBoard() const {
+    return board;
+}

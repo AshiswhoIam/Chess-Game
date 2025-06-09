@@ -31,9 +31,8 @@ public:
     void performCastling(Color color, bool kingside);
     //Checking if the square is hit by enemy for castling
     bool isSquareUnderAttack(int row, int col, Color threatenedColor) const;
-
-
-
+    //getter for board
+    const ChessBoard& getBoard() const;
 
 
 

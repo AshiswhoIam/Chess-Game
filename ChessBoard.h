@@ -30,9 +30,7 @@ public:
 
 
 
-
-
-private: 
+private:
     //2d grid for board
     //smart pointers for chess piece managements
     std::vector<std::vector<std::unique_ptr<ChessPiece>>> board;
