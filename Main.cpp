@@ -270,7 +270,7 @@ int main() {
             }
 
             //Draw promotion buttons with piece sprites
-            Color currentColor = gameEngine.getCurrentTurn() == Color::White ? Color::Black : Color::White;
+            Color currentColor = gameEngine.getCurrentTurn();
 
             for (int i = 0; i < 4; i++) {
                 window.draw(promotionButtons[i]);
