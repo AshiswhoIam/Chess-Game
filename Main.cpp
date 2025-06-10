@@ -169,11 +169,11 @@ int main() {
     //Highlight squares with cosmic glow
     sf::RectangleShape highlightSquare;
     highlightSquare.setSize(sf::Vector2f(SQUARE_SIZE, SQUARE_SIZE));
-    highlightSquare.setFillColor(sf::Color(255, 215, 0, 150)); // Golden glow
+    highlightSquare.setFillColor(sf::Color(255, 20, 147, 220));
 
     sf::RectangleShape validMoveSquare;
     validMoveSquare.setSize(sf::Vector2f(SQUARE_SIZE, SQUARE_SIZE));
-    validMoveSquare.setFillColor(sf::Color(0, 255, 127, 120)); // Bright green glow
+    validMoveSquare.setFillColor(sf::Color(0, 255, 127, 120));
 
     //Loading piece textures
     std::unordered_map<char, std::string> pieceToFile = {
