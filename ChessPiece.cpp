@@ -233,13 +233,6 @@ bool King::isValidMove(const ChessMoves& move, const ChessBoard& board) const {
         return !target || target->getColor() != c;
     }
 
-    //Castling for king to move 2 squares horizontally
-    if (rowDifference == 0 && colDifference == 2) {
-        //Return true @ makeMove
-        return true;
-    }
-
-    //Invalid if any other move
     return false;
 }
 
