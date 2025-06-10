@@ -43,3 +43,25 @@ Updated Board:
 
 
 <img src="MdAssets/UpdatedBoard.png" alt="Screenshot" width="400">
+
+
+Promotion:
+
+<img src="MdAssets/PromotionWhite.png" alt="Screenshot" width="400">
+
+
+<img src="MdAssets/PromotionWhite2.png" alt="Screenshot" width="400">
+
+
+Capture animation:
+
+<img src="MdAssets/capture1.png" alt="Screenshot" width="400">
+
+
+<img src="MdAssets/capture2.png" alt="Screenshot" width="400">
+
+
+
+
+
+

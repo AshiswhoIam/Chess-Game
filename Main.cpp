@@ -120,7 +120,7 @@ int main() {
     const int BOARD_SIZE = 640;
     const int SQUARE_SIZE = BOARD_SIZE / 8;
 
-    sf::RenderWindow window(sf::VideoMode(BOARD_SIZE, BOARD_SIZE), "Nebula Chess");
+    sf::RenderWindow window(sf::VideoMode(BOARD_SIZE, BOARD_SIZE), "Chess");
 
     //Clock for animation timing
     sf::Clock clock;
